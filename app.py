@@ -1,12 +1,8 @@
 
 # -*- coding: utf-8 -*-
 import streamlit as st
-import pandas as pd
 import numpy as np
-import plotly.figure_factory as ff
-import matplotlib.pyplot as plt
-
-from functions import barcharts
+from functions import barcharts, load_data
 
 #--------------------------
 # ICON & TITLE
@@ -21,16 +17,11 @@ st.set_page_config(page_title="Home Credit - Client Scoring",
 # VARIABLES & DATA PREP
 #--------------------------
 
-path = "/home/romain/Bureau/Formation OpenClassrooms/Projet 07 - Implémentez un modèle de scoring/"
-
-@st.cache
-def load_data():
-    df = pd.read_csv(path+"customers_data.csv")
-    return df
-
+path = "/home/romain/Bureau/Formation OpenClassrooms/Projet 07 - Implémentez un modèle de scoring/P7_Home_Credit_App/"
 
 # Will only run once if already cached
-df = load_data()
+
+df = load_data(path+'customers_data.csv')
 
 # Add a selectbox to the sidebar:
 select_client = st.sidebar.selectbox(

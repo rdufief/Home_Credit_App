@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import streamlit as st
 
-
+@st.cache
 def load_data(filename):
     df = pd.read_csv(filename, index_col=0)
     return df
