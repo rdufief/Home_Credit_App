@@ -17,11 +17,9 @@ st.set_page_config(page_title="Home Credit - Client Scoring",
 # VARIABLES & DATA PREP
 #--------------------------
 
-path = "/home/romain/Bureau/Formation OpenClassrooms/Projet 07 - Implémentez un modèle de scoring/P7_Home_Credit_App/"
-
 # Will only run once if already cached
 
-df = load_data(path+'customers_data.csv')
+df = load_data('customers_data.csv')
 
 # Add a selectbox to the sidebar:
 select_client = st.sidebar.selectbox(
