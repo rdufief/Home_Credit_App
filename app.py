@@ -108,7 +108,7 @@ with st.beta_container():
     cola, colb = st.beta_columns(2)
 
     with cola:
-        st.write('**CREDIT SCORING VALUE :**',unsafe_allow_html=True)
+        st.write('**CREDIT RISK VALUE :**',unsafe_allow_html=True)
         #st.markdown(f"**Credit Score:** {key_data['proba']:,.2%}")
         fig2 = gaugechart(key_data)
         st.write(fig2)
@@ -128,9 +128,10 @@ with st.beta_container():
         st.write('')
         st.write('')
         if key_data['target'] ==1:
+            st.markdown("**Credit Application is risky : unlikely to be approved**")
+        else:
             st.markdown("**Credit Application is likely to be approved**")
             st.balloons()
-        else: st.markdown("**Credit Application is unlikely to be approved**")
 
 #--------------------------
 # CREDIT SCORE COMPARED TO OTHER CLIENTS

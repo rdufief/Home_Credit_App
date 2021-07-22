@@ -15,14 +15,14 @@ def gaugechart(key_data):
         mode="gauge+number",
         value= val,
         domain={'x': [0, 1], 'y': [0,1]},
-        title={'text': "Probability to obtain Credit"}))
+        title={'text': "Default Probability"}))
     fig.update_traces(number_valueformat = ".1%",gauge_axis_tickmode='array',gauge_axis_range=[0,1])
     fig.update_layout(autosize=False,width=600,height=400)
     if val < 0.4:
-        fig.update_traces(gauge_bar_color = 'red')
+        fig.update_traces(gauge_bar_color = 'green')
     else:
         if val > 0.7:
-            fig.update_traces(gauge_bar_color = 'green')
+            fig.update_traces(gauge_bar_color = 'red')
         else: fig.update_traces(gauge_bar_color = 'orange')
     return fig
 
@@ -63,7 +63,7 @@ def barcharts(df, key_data):
         # bar chart to represent clients distribution by probability bin
         fig.add_trace(go.Bar(x=proba_groups.index,
                              y=proba_groups.iloc[:, i],
-                             name='Credit Score Bin',
+                             name='Credit Risk Score Bin',
                              hovertemplate='<b>Proba: %{x}%</b><br>#Nb of clients: %{y:,.0f}',
                              legendgroup='grp2',
                              showlegend=True),
@@ -74,15 +74,15 @@ def barcharts(df, key_data):
                                  mode='markers',
                                  marker_size = 20,
                                  marker_symbol='star-dot',
-                                 name='Credit Score',
-                                 hovertemplate=f"<b>Client's probability: {proba*100:.2f}%</b>",
+                                 name='Credit Risk Score',
+                                 hovertemplate=f"<b>Client's risk probability: {proba*100:.2f}%</b>",
                                  showlegend=False),
                                  row=1, col=1)
 
         # bar chart to represent clients distribution by probability bin, against similar clients (in the same cluster)
         fig.add_trace(go.Bar(x=proba_groups2.index,
                              y=proba_groups2.iloc[:, i],
-                             name='Credit Score Bin',
+                             name='Credit Risk Score Bin',
                              hovertemplate='<b>Proba: %{x}%</b><br>#Nb of clients: %{y:,.0f}',
                              legendgroup='grp2',
                              showlegend=True),
@@ -95,17 +95,17 @@ def barcharts(df, key_data):
                                  marker_size = 20,
                                  marker_symbol='star-dot',
                                  marker_color='yellow',
-                                 name='Credit Score',
-                                 hovertemplate=f"<b>Client's probability: {proba*100:.2f}%</b>",
+                                 name='Credit Risk Score',
+                                 hovertemplate=f"<b>Client's risk probability: {proba*100:.2f}%</b>",
                                  showlegend=False),
                                  row=1, col=2)
     fig.update_yaxes(title_text='Nb of clients', linecolor='grey', mirror=True,
                      title_standoff=0, gridcolor='grey', gridwidth=0.1,
                      zeroline=False,
                      row=1, col=1)
-    fig.update_xaxes(title_text='Credit Acceptance Probability',linecolor='grey', mirror=True,
+    fig.update_xaxes(title_text='Credit Default Probability',linecolor='grey', mirror=True,
                      row=1, col=1)
-    fig.update_xaxes(title_text='Credit Acceptance Probability',linecolor='grey', mirror=True,
+    fig.update_xaxes(title_text='Credit Default Probability',linecolor='grey', mirror=True,
                      row=1, col=2)
 
     return fig
@@ -118,6 +118,11 @@ def comparisonchart(df, key_data):
     age_df = df[df['age_group'] == key_data['age_group']].copy()
     debt_df = df[df['debt_group'] == key_data['debt_group']].copy()
 
+    age_proba = age_df['proba'].mean()
+    ed_proba = ed_df['proba'].mean()
+    gender_proba = gender_df['proba'].mean()
+    debt_proba = debt_df['proba'].mean()
+
     fig = make_subplots(
         rows=2, cols=2,
         column_widths=[2,2],
@@ -129,68 +134,66 @@ def comparisonchart(df, key_data):
     )
 
     fig.add_trace(go.Indicator(
-        value = age_df['proba'].mean(),
-        delta = {'reference': 2*age_df['proba'].mean()-key_data['proba'], 'valueformat': '.2%'}),
+        value = age_proba,
+        delta = {'reference': 2*age_proba-key_data['proba'], 'valueformat': '.2%', 'increasing.color':'red', 'decreasing.color':'green'}),
         row = 1,
         col = 1
     )
 
-    if age_df['proba'].mean() < 0.4:
+    if age_proba < 0.4:
+        fig.update_traces(gauge_bar_color = 'green')
+    elif age_proba > 0.7:
         fig.update_traces(gauge_bar_color = 'red')
     else:
-        if age_df['proba'].mean() > 0.7:
-            fig.update_traces(gauge_bar_color = 'green')
-        else: fig.update_traces(gauge_bar_color = 'orange')
+        fig.update_traces(gauge_bar_color = 'orange')
+
     fig.update_traces(number_valueformat=".1%", gauge_axis_tickmode='array', gauge_axis_range=[0, 1])
 
     fig.add_trace(go.Indicator(
-        value=ed_df['proba'].mean(),
-        delta={'reference': 2*ed_df['proba'].mean()-key_data['proba'], 'valueformat':'.2%'}),
+        value=ed_proba,
+        delta={'reference': 2*ed_proba-key_data['proba'], 'valueformat':'.2%', 'increasing.color':'red', 'decreasing.color':'green'}),
         row=1,
         col=2
     )
 
-    if ed_df['proba'].mean() < 0.4:
-        fig.update_traces(gauge_bar_color='red')
+    if ed_proba < 0.4:
+        fig.update_traces(gauge_bar_color = 'green')
+    elif ed_proba > 0.7:
+        fig.update_traces(gauge_bar_color = 'red')
     else:
-        if ed_df['proba'].mean() > 0.7:
-            fig.update_traces(gauge_bar_color='green')
-        else:
-            fig.update_traces(gauge_bar_color='orange')
+        fig.update_traces(gauge_bar_color = 'orange')
 
     fig.update_traces(number_valueformat=".1%", gauge_axis_tickmode='array', gauge_axis_range=[0, 1])
 
     fig.add_trace(go.Indicator(
-        value=debt_df['proba'].mean(),
-        delta={'reference': 2*debt_df['proba'].mean()-key_data['proba'], 'valueformat':'.2%'}),
+        value=debt_proba,
+        delta={'reference': 2*debt_proba-key_data['proba'], 'valueformat':'.2%', 'increasing.color':'red', 'decreasing.color':'green'}),
         row=2,
         col=1
     )
 
-    if debt_df['proba'].mean() < 0.4:
-        fig.update_traces(gauge_bar_color='red')
+    if debt_proba < 0.4:
+        fig.update_traces(gauge_bar_color = 'green')
+    elif debt_proba > 0.7:
+        fig.update_traces(gauge_bar_color = 'red')
     else:
-        if debt_df['proba'].mean() > 0.7:
-            fig.update_traces(gauge_bar_color='green')
-        else:
-            fig.update_traces(gauge_bar_color='orange')
+        fig.update_traces(gauge_bar_color = 'orange')
 
     fig.update_traces(number_valueformat=".1%", gauge_axis_tickmode='array', gauge_axis_range=[0, 1])
 
     fig.add_trace(go.Indicator(
-        value=gender_df['proba'].mean(),
-        delta={'reference': 2*gender_df['proba'].mean()-key_data['proba'], 'valueformat':'.2%'}),
+        value=gender_proba,
+        delta={'reference': 2*gender_proba-key_data['proba'], 'valueformat':'.2%', 'increasing.color':'red', 'decreasing.color':'green'}),
         row=2,
         col=2
     )
 
-    if gender_df['proba'].mean() < 0.4:
-        fig.update_traces(gauge_bar_color='red')
+    if gender_proba < 0.4:
+        fig.update_traces(gauge_bar_color = 'green')
+    elif gender_proba > 0.7:
+        fig.update_traces(gauge_bar_color = 'red')
     else:
-        if gender_df['proba'].mean() > 0.7:
-            fig.update_traces(gauge_bar_color='green')
-        else:
-            fig.update_traces(gauge_bar_color='orange')
+        fig.update_traces(gauge_bar_color = 'orange')
 
     fig.update_traces(number_valueformat=".1%", gauge_axis_tickmode='array', gauge_axis_range=[0, 1])
 
