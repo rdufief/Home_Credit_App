@@ -3,11 +3,28 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import streamlit as st
 
+
 @st.cache
 def load_data(filename):
     df = pd.read_csv(filename, index_col=0)
     return df
 
+def gaugechart(key_data):
+    val = key_data['proba']
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value= val,
+        domain={'x': [0, 1], 'y': [0,1]},
+        title={'text': "Probability to obtain Credit"}))
+    fig.update_traces(number_valueformat = ".1%",gauge_axis_tickmode='array',gauge_axis_range=[0,1])
+    fig.update_layout(autosize=False,width=600,height=400)
+    if val < 0.4:
+        fig.update_traces(gauge_bar_color = 'red')
+    else:
+        if val > 0.7:
+            fig.update_traces(gauge_bar_color = 'green')
+        else: fig.update_traces(gauge_bar_color = 'orange')
+    return fig
 
 def barcharts(df, key_data):
     # MAKE SUBPLOTS
@@ -90,5 +107,98 @@ def barcharts(df, key_data):
                      row=1, col=1)
     fig.update_xaxes(title_text='Credit Acceptance Probability',linecolor='grey', mirror=True,
                      row=1, col=2)
+
+    return fig
+
+def comparisonchart(df, key_data):
+
+    # Data prep
+    ed_df = df[df['NAME_EDUCATION_TYPE'] == key_data['education_type']].copy()
+    gender_df = df[df['CODE_GENDER'] == key_data['gender']].copy()
+    age_df = df[df['age_group'] == key_data['age_group']].copy()
+    debt_df = df[df['debt_group'] == key_data['debt_group']].copy()
+
+    fig = make_subplots(
+        rows=2, cols=2,
+        column_widths=[2,2],
+        subplot_titles=("Within the same Age Group","With the same Education Level", "With a similar Debt/Income ratio", "With the same Gender"),
+        specs=[[{'type' : 'domain'}, {'type' : 'domain'}],
+               [{'type' : 'domain'},{'type' : 'domain'}]],
+        vertical_spacing=0.1,
+        horizontal_spacing=0.1
+    )
+
+    fig.add_trace(go.Indicator(
+        value = age_df['proba'].mean(),
+        delta = {'reference': 2*age_df['proba'].mean()-key_data['proba'], 'valueformat': '.2%'}),
+        row = 1,
+        col = 1
+    )
+
+    if age_df['proba'].mean() < 0.4:
+        fig.update_traces(gauge_bar_color = 'red')
+    else:
+        if age_df['proba'].mean() > 0.7:
+            fig.update_traces(gauge_bar_color = 'green')
+        else: fig.update_traces(gauge_bar_color = 'orange')
+    fig.update_traces(number_valueformat=".1%", gauge_axis_tickmode='array', gauge_axis_range=[0, 1])
+
+    fig.add_trace(go.Indicator(
+        value=ed_df['proba'].mean(),
+        delta={'reference': 2*ed_df['proba'].mean()-key_data['proba'], 'valueformat':'.2%'}),
+        row=1,
+        col=2
+    )
+
+    if ed_df['proba'].mean() < 0.4:
+        fig.update_traces(gauge_bar_color='red')
+    else:
+        if ed_df['proba'].mean() > 0.7:
+            fig.update_traces(gauge_bar_color='green')
+        else:
+            fig.update_traces(gauge_bar_color='orange')
+
+    fig.update_traces(number_valueformat=".1%", gauge_axis_tickmode='array', gauge_axis_range=[0, 1])
+
+    fig.add_trace(go.Indicator(
+        value=debt_df['proba'].mean(),
+        delta={'reference': 2*debt_df['proba'].mean()-key_data['proba'], 'valueformat':'.2%'}),
+        row=2,
+        col=1
+    )
+
+    if debt_df['proba'].mean() < 0.4:
+        fig.update_traces(gauge_bar_color='red')
+    else:
+        if debt_df['proba'].mean() > 0.7:
+            fig.update_traces(gauge_bar_color='green')
+        else:
+            fig.update_traces(gauge_bar_color='orange')
+
+    fig.update_traces(number_valueformat=".1%", gauge_axis_tickmode='array', gauge_axis_range=[0, 1])
+
+    fig.add_trace(go.Indicator(
+        value=gender_df['proba'].mean(),
+        delta={'reference': 2*gender_df['proba'].mean()-key_data['proba'], 'valueformat':'.2%'}),
+        row=2,
+        col=2
+    )
+
+    if gender_df['proba'].mean() < 0.4:
+        fig.update_traces(gauge_bar_color='red')
+    else:
+        if gender_df['proba'].mean() > 0.7:
+            fig.update_traces(gauge_bar_color='green')
+        else:
+            fig.update_traces(gauge_bar_color='orange')
+
+    fig.update_traces(number_valueformat=".1%", gauge_axis_tickmode='array', gauge_axis_range=[0, 1])
+
+    fig.update_layout(
+        template={'data': {'indicator': [{'mode': "number+delta+gauge"}]}},
+        autosize=False,
+        width=1000,
+        height=800
+    )
 
     return fig
