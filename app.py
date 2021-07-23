@@ -21,10 +21,39 @@ st.set_page_config(page_title="Home Credit - Client Scoring",
 df = load_data('customers_data.csv')
 
 # Add a selectbox to the sidebar:
-select_client = st.sidebar.selectbox(
-    'Choose client ID',
-    (np.unique(df["SK_ID_CURR"]))
-)
+
+st.sidebar.header('Filter clients :')
+
+age_category_list = ['All'] + np.unique(df['age_group']).tolist()
+age_category = st.sidebar.selectbox("Age Group", age_category_list)
+
+gender_list = ['All'] + np.unique(df['CODE_GENDER']).tolist()
+gender = st.sidebar.selectbox("Gender", gender_list)
+
+ed_level_list = ['All'] + np.unique(df['NAME_EDUCATION_TYPE']).tolist()
+ed_level = st.sidebar.selectbox("Education Level", ed_level_list)
+
+# Saving selections in a global filter
+
+if (age_category != 'All'):
+    age_filter = (df['age_group'] == age_category)
+else: age_filter = (df['age_group'].isin(age_category_list))
+
+if (ed_level != 'All'):
+    ed_filter = (df['NAME_EDUCATION_TYPE'] == ed_level)
+else: ed_filter = (df['NAME_EDUCATION_TYPE'].isin(ed_level_list))
+
+if (gender != 'All'):
+    gender_filter = (df['CODE_GENDER'] == gender)
+else: gender_filter = (df['CODE_GENDER'].isin(gender_list))
+
+client_list = df[age_filter & ed_filter & gender_filter]["SK_ID_CURR"].tolist()
+
+st.sidebar.markdown("-------------------------------------------------")
+
+st.sidebar.header('Select a client :')
+select_client = st.sidebar.selectbox('Choose client ID',client_list)
+
 client_index = df[df["SK_ID_CURR"] == select_client].index[0]
 
 key_data = {
@@ -51,18 +80,18 @@ key_data = {
     'proba_bin':df.loc[client_index,'proba_group']
 }
 
-# Add a slider to the sidebar:
-#add_slider = st.sidebar.slider('Select a client',)
 
 filtered_df = df[df['SK_ID_CURR'] == select_client]
 
 #--------------------------
 # PAGE TITLE
 #--------------------------
-st.write('# **HOME CREDIT APPLICATION - CLIENT DETAILS**')
+st.write('# **HOME CREDIT APPLICATION - RISK EVALUATION**')
 st.write('')
 st.write('')
 st.write('')
+
+st.markdown("-------------------------------------------------")
 
 #--------------------------
 # CLIENT DESCRIPTION
@@ -93,6 +122,7 @@ with st.beta_container():
         st.markdown(f"**Goods Price:   ** ${key_data['goods_price']:,.2f}")
         st.markdown(f"**Annuity:   ** ${key_data['annuity']:,.2f}")
 
+st.markdown("-------------------------------------------------")
 
 #--------------------------
 # CREDIT SCORE RESULT
@@ -108,7 +138,7 @@ with st.beta_container():
     cola, colb = st.beta_columns(2)
 
     with cola:
-        st.write('**CREDIT RISK VALUE :**',unsafe_allow_html=True)
+        st.write('## **Credit Risk Value :**',unsafe_allow_html=True)
         #st.markdown(f"**Credit Score:** {key_data['proba']:,.2%}")
         fig2 = gaugechart(key_data)
         st.write(fig2)
@@ -128,28 +158,36 @@ with st.beta_container():
         st.write('')
         st.write('')
         if key_data['target'] ==1:
-            st.markdown("**Credit Application is risky : unlikely to be approved**")
+            st.markdown("## Credit Application is **risky** & likely to **default**")
         else:
-            st.markdown("**Credit Application is likely to be approved**")
+            st.markdown("## Credit Application is **safe** & likely to be **approved**")
             st.balloons()
 
 #--------------------------
 # CREDIT SCORE COMPARED TO OTHER CLIENTS
 #--------------------------
 
-st.write("## Where does the client stand?")
-fig = barcharts(df, key_data)
+st.markdown("-------------------------------------------------")
+
+
+st.write("## **Where does the client stand?**")
+st.write("*Comparison is made with clients filtered using the left panel*")
+fig = barcharts(df[df["SK_ID_CURR"].isin(client_list)], key_data)
 st.write(fig)
 
 #--------------------------
 # CREDIT SCORE COMPARED TO OTHER CLIENTS
 #--------------------------
 
+st.markdown("-------------------------------------------------")
+
+
 st.write('')
-st.write('**Score comparison with similar clients : **')
+st.write('## **Score comparison with similar clients :** ')
+st.write("*Comparison is made with clients filtered using the left panel*")
 st.write('')
 
-fig3 = comparisonchart(df,key_data)
+fig3 = comparisonchart(df[df["SK_ID_CURR"].isin(client_list)],key_data)
 st.write(fig3)
 
 

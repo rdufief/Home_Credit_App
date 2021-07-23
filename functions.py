@@ -123,6 +123,25 @@ def comparisonchart(df, key_data):
     gender_proba = gender_df['proba'].mean()
     debt_proba = debt_df['proba'].mean()
 
+
+    list_proba = [age_proba,ed_proba,gender_proba,debt_proba]
+    list_color = []
+
+    j=0
+    for i in list_proba:
+        if i < 0.45:
+            list_color.append('green')
+        elif i > 0.6:
+            list_color.append('red')
+        else:
+            list_color.append('orange')
+        j+=1
+
+    age_color = list_color[0]
+    ed_color = list_color[1]
+    gender_color = list_color[2]
+    debt_color = list_color[3]
+
     fig = make_subplots(
         rows=2, cols=2,
         column_widths=[2,2],
@@ -135,65 +154,41 @@ def comparisonchart(df, key_data):
 
     fig.add_trace(go.Indicator(
         value = age_proba,
+        gauge={'bar': {'color': age_color}},
         delta = {'reference': 2*age_proba-key_data['proba'], 'valueformat': '.2%', 'increasing.color':'red', 'decreasing.color':'green'}),
         row = 1,
         col = 1
     )
 
-    if age_proba < 0.4:
-        fig.update_traces(gauge_bar_color = 'green')
-    elif age_proba > 0.7:
-        fig.update_traces(gauge_bar_color = 'red')
-    else:
-        fig.update_traces(gauge_bar_color = 'orange')
-
     fig.update_traces(number_valueformat=".1%", gauge_axis_tickmode='array', gauge_axis_range=[0, 1])
 
     fig.add_trace(go.Indicator(
         value=ed_proba,
+        gauge={'bar': {'color': ed_color}},
         delta={'reference': 2*ed_proba-key_data['proba'], 'valueformat':'.2%', 'increasing.color':'red', 'decreasing.color':'green'}),
         row=1,
         col=2
     )
 
-    if ed_proba < 0.4:
-        fig.update_traces(gauge_bar_color = 'green')
-    elif ed_proba > 0.7:
-        fig.update_traces(gauge_bar_color = 'red')
-    else:
-        fig.update_traces(gauge_bar_color = 'orange')
-
     fig.update_traces(number_valueformat=".1%", gauge_axis_tickmode='array', gauge_axis_range=[0, 1])
 
     fig.add_trace(go.Indicator(
         value=debt_proba,
+        gauge={'bar': {'color': debt_color}},
         delta={'reference': 2*debt_proba-key_data['proba'], 'valueformat':'.2%', 'increasing.color':'red', 'decreasing.color':'green'}),
         row=2,
         col=1
     )
 
-    if debt_proba < 0.4:
-        fig.update_traces(gauge_bar_color = 'green')
-    elif debt_proba > 0.7:
-        fig.update_traces(gauge_bar_color = 'red')
-    else:
-        fig.update_traces(gauge_bar_color = 'orange')
-
     fig.update_traces(number_valueformat=".1%", gauge_axis_tickmode='array', gauge_axis_range=[0, 1])
 
     fig.add_trace(go.Indicator(
         value=gender_proba,
+        gauge={'bar':{'color' : gender_color}},
         delta={'reference': 2*gender_proba-key_data['proba'], 'valueformat':'.2%', 'increasing.color':'red', 'decreasing.color':'green'}),
         row=2,
         col=2
     )
-
-    if gender_proba < 0.4:
-        fig.update_traces(gauge_bar_color = 'green')
-    elif gender_proba > 0.7:
-        fig.update_traces(gauge_bar_color = 'red')
-    else:
-        fig.update_traces(gauge_bar_color = 'orange')
 
     fig.update_traces(number_valueformat=".1%", gauge_axis_tickmode='array', gauge_axis_range=[0, 1])
 
