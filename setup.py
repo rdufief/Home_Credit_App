@@ -1,3 +1,4 @@
+python3==3.8.10
 numpy==1.21.0
 pandas
 plotly
