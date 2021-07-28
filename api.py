@@ -1,4 +1,4 @@
-from flask import request, jsonify, Flask
+from flask import request, jsonify, Flask, render_template
 from functions import load_data
 
 app = Flask(__name__)
@@ -18,6 +18,7 @@ def api_alldf():
     return data
 
 @app.route('/api/v1/resources/targets', methods=['GET'])
+
 def api_id():
     # Check if an ID was provided as part of the URL.
     # If ID is provided, assign it to a variable.
@@ -38,7 +39,8 @@ def api_id():
 
     # Use the jsonify function from Flask to convert our list of
     # Python dictionaries to the JSON format.
-    return jsonify(results)
+    return render_template('index.html', variable=id, target = data[id])
 
 if __name__ == "__main__":
+    #app.run(debug=True)
     app.run(host="151.80.119.47", port=5000, threaded=True, debug=True)
