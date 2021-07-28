@@ -1,9 +1,7 @@
-import flask
-from flask import request, jsonify
+from flask import request, jsonify, Flask
 from functions import load_data
 
-app = flask.Flask(__name__)
-app.config["DEBUG"] = True
+app = Flask(__name__)
 
 df = load_data('customers_data_light.csv')
 data = df.to_dict()
@@ -18,7 +16,6 @@ def home():
 @app.route('/api/v1/resources/df/all', methods=['GET'])
 def api_alldf():
     return data
-
 
 @app.route('/api/v1/resources/targets', methods=['GET'])
 def api_id():
@@ -43,4 +40,5 @@ def api_id():
     # Python dictionaries to the JSON format.
     return jsonify(results)
 
-app.run()
+if __name__ == "__main__":
+    app.run(host="151.80.119.47", port=5000, threaded=True, debug=True)
