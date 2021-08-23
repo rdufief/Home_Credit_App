@@ -39,7 +39,8 @@ def api_id():
 
     # Use the jsonify function from Flask to convert our list of
     # Python dictionaries to the JSON format.
-    return render_template('index.html', variable=id, target = data[id])
+    #return render_template('index.html', variable=id, target = data[id])
+    return jsonify(results)
 
 if __name__ == "__main__":
     #app.run(debug=True)
