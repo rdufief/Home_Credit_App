@@ -1,2 +1,2 @@
-# P7_Home_Crdit_App
+# P7_Home_Credit_App
  

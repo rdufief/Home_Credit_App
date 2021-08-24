@@ -1,0 +1,37 @@
+ROMAIN DUFIEF
+
+OpenClassrooms - Parcours Data Science
+
+PROJET 7 - Implémentez un modèle de scoring
+-------------------------------------------------
+
+LISTE DES LIVRABLES :
+
+
+* Notebook de préparation des données et de construction du modèle :
+
+P7_Dufief_Romain_Analyse_& Construction_Scoring.ipynb
+
+--------------------------------------
+
+* Note méthodologique d'explication du modèle : 
+
+Note méthodologique.docx
+
+--------------------------------------
+
+* Lien vers l'application de dashboard :
+
+https://share.streamlit.io/rdufief/p7_home_credit_app/main/app.py
+
+--------------------------------------
+
+* Support de présentation pour la soutenance : 
+
+P7_Dufief_Romain_support.pptx
+
+--------------------------------------
+
+* Dossier de versioning en ligne : 
+
+https://github.com/rdufief/P7_Home_Credit_App.git
